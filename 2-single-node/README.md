@@ -1,6 +1,6 @@
 # Single Node Network
 
-An example of creating a single L2 network on one node, containing 
+An example of creating a single L2 network on one node, containing
 2 network namespaces (containers), connected via a bridge.
 
 ![Diagram](./diagram.jpg)
@@ -11,7 +11,7 @@ Create the VM (container-networking):
 vagrant up
 ```
 
-SSH to the node (VM) and run the setup script to create the network namespaces connected via bridge: 
+SSH to the node (VM) and run the setup script to create the network namespaces connected via bridge:
 
 ```
 vagrant ssh container-networking-[12]
@@ -35,4 +35,25 @@ To test the entire flow, i.e. setup - run the tests - teardown, from your machin
 
 ```
 make
+```
+
+## FAQ
+
+### can't access internet on container?
+
+on the host node
+
+```shell
+
+sysctl -w net.ipv4.ip_forward=1
+
+sudo iptables -t nat -n -L
+sudo iptables -t nat -A POSTROUTING -s 172.16.0.1/24 -o enp0s3 -j MASQUERADE
+```
+
+on the container node
+
+```shell
+sudo ip netns exec con1 bash
+ping 8.8.8.8
 ```
